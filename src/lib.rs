@@ -1,3 +1,8 @@
+//! # Minigrep
+//!
+//! `minigrep` is a simple CLI program that can search a file, line by
+//! line, and return only those lines which contain a given substring.
+
 use std::env;
 use std::error::Error;
 use std::fs::File;
@@ -29,6 +34,7 @@ impl Config {
     }
 }
 
+/// Reads content from file, then searches and prints results
 pub fn run(config: Config) -> Result<(), Box<Error>> {
     let mut f = File::open(config.filename)?;
 
@@ -48,12 +54,48 @@ pub fn run(config: Config) -> Result<(), Box<Error>> {
     Ok(())
 }
 
+/// Performs a case-sensitive line-by-line search of a string
+///
+/// # Examples
+///
+/// ```
+/// let query = "le";
+///
+/// let text = "\
+/// Example text with
+/// multiple lines
+/// and some matches
+/// to our query.";
+///
+/// assert_eq!(
+///     vec!["Example text with", "multiple lines"], 
+///     minigrep::search(query, text)
+///     );
+/// ```
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents.lines()
         .filter(|line| line.contains(query))
         .collect()
 }
 
+/// Performs a case-insensitive line-by-line search of a string
+///
+/// # Examples
+///
+/// ```
+/// let query = "LE";
+///
+/// let text = "\
+/// Example text with
+/// multiple lines
+/// and some matches
+/// to our query.";
+///
+/// assert_eq!(
+///     vec!["Example text with", "multiple lines"],
+///     minigrep::search_case_insensitive(query, text)
+///     );
+/// ```
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_lowercase();
     contents.lines()
